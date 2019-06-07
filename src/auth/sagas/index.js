@@ -3,5 +3,5 @@ import * as generators from "./generators";
 import * as actionTypes from "../constants/actionTypes";
 
 export default function* (){
-  yield takeLatest(generators.login, actionTypes.LOGIN_START);
+  yield takeLatest(generators.requestAuth, actionTypes.REQUEST_AUTH);
 }
