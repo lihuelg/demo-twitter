@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/styles';
 import {
   TextField,
@@ -9,7 +10,6 @@ import {
   Grid,
   IconButton,
   CircularProgress,
-  Snackbar,
 } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import MySnackbar from '../../shared/components/MySnackbar';
@@ -40,7 +40,7 @@ class Auth extends Component {
   }
 
   render() {
-    const { classes, authenticate, isFetching, error, isValid } = this.props;
+    const { classes, handleMainClick, isFetching, error, isValid, match: { path } } = this.props;
     const { username, password, passwordVisible } = this.state;
     
     return (
@@ -90,10 +90,11 @@ class Auth extends Component {
                   className={classes.login}
                   variant="contained"
                   size="large"
-                  onClick={() => authenticate(username, password)}
+                  onClick={() => handleMainClick(username, password)}
                 >
-                  {isFetching ? <CircularProgress/> : 'Login'}
+                  {isFetching ? <CircularProgress/> : path.slice(1)}
                 </Button>
+                {path.match('login') && <Link to="/register">Don't have an account? Sign up for free!</Link>}
                 <MySnackbar mustOpen={isValid != null && !isValid} variant="error" message={error} />
             </Paper>
           </form>

@@ -1,14 +1,27 @@
 import { put, call } from 'redux-saga/effects';
-import { authenticate } from '../api';
-import { requestAuthSuccess, requestAuthError } from '../actions';
+import { authenticate, register } from '../api';
+import {
+  requestAuthSuccess,
+  requestAuthError,
+  requestRegisterSuccess,
+  requestRegisterError,
+} from '../actions';
 import errorParser from '../../shared/utils/errorParser';
 
-export function* requestAuth({ username, password }) {
-  try {
-    const { token } = yield call(authenticate, { email: username, password });
-    yield put(requestAuthSuccess(token));
-  } catch(error) {
-    console.error(error);
-    yield put(requestAuthError(errorParser(error)));
+
+function request(apiCall, successCb, errorCb) {
+  return function* ({ username, password, history }) {
+    try {
+      const { token } = yield call(apiCall, { email: username, password });
+      yield put(successCb(token));
+      yield put(history.push('/'))
+    } catch (error) {
+      console.error(error);
+      yield put(errorCb(errorParser(error)));
+    }
   }
 }
+
+export const requestAuth = request(authenticate, requestAuthSuccess, requestAuthError);
+
+export const requestRegister = request(register, requestRegisterSuccess, requestRegisterError);

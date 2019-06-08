@@ -4,4 +4,5 @@ import * as actionTypes from "../constants/actionTypes";
 
 export default function* (){
   yield takeLatest(actionTypes.REQUEST_AUTH, generators.requestAuth);
+  yield takeLatest(actionTypes.REQUEST_REGISTER, generators.requestRegister);
 }

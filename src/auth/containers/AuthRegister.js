@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { requestAuth } from '../actions';
+import { requestRegister } from '../actions';
 import Auth from '../components/Auth';
 
 const mapStateToProps = ({ authReducer }) => ({
@@ -7,7 +7,7 @@ const mapStateToProps = ({ authReducer }) => ({
 });
 
 const mapDispatchToProps = (dispatch, { history }) => ({
-  handleMainClick: (username, password) => dispatch(requestAuth(username, password, history))
+  handleMainClick: (username, password) => dispatch(requestRegister(username, password, history))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Auth);
