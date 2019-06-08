@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
 import store from './store'
 
+import { BrowserRouter as Router } from "react-router-dom";
+
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import './index.css';
@@ -16,7 +18,9 @@ ReactDOM.render(
     
   <Provider store={store}>
     <MuiThemeProvider theme={theme}>
-      <App />
+      <Router>
+        <App />
+      </Router>
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('root')

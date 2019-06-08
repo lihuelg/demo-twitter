@@ -1,11 +1,13 @@
 import React from 'react';
-import Auth from '../../auth/containers/Auth';
+import { Route } from 'react-router-dom';
+import { Auth, PrivateRoute } from '../../auth/containers';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <Auth />
+      <Route exact path="/login" component={Auth} />
+      <PrivateRoute exact path="/" component={<div>Feed goes here</div>} />
     </div>
   );
 }
