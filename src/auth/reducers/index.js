@@ -10,6 +10,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch(action.type){
     case actionTypes.REQUEST_AUTH:
+    case actionTypes.REQUEST_REGISTER:
       return {
         ...state,
         error: null,
@@ -17,6 +18,7 @@ export default (state = initialState, action) => {
         isFetching: true,
       };
     case actionTypes.REQUEST_AUTH_SUCCESS:
+    case actionTypes.REQUEST_REGISTER_SUCCESS:
       return {
         ...state,
         token: action.data,
@@ -24,6 +26,7 @@ export default (state = initialState, action) => {
         isFetching: false,
       };
     case actionTypes.REQUEST_AUTH_ERROR:
+    case actionTypes.REQUEST_REGISTER_ERROR:
       return {
         ...state,
         error: action.error,
