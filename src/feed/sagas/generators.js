@@ -5,7 +5,7 @@ import errorParser from '../../shared/utils/errorParser';
 
 export function* requestFeed({ user }){
   try{
-    const { items } = yield call(getFeed, user);
+    const items = yield call(getFeed, user);
     yield put(requestFeedSuccess(items));
   }catch(error){
     console.error(error);
