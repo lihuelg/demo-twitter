@@ -12,7 +12,7 @@ import {
   Snackbar,
 } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
-
+import MySnackbar from '../../shared/components/MySnackbar';
 
 const styles = ({ spacing }) => ({
   root: {
@@ -38,10 +38,11 @@ class Auth extends Component {
       passwordVisible: false,
     };
   }
+
   render() {
     const { classes, authenticate, isFetching, error, isValid } = this.props;
     const { username, password, passwordVisible } = this.state;
-
+    
     return (
       <Grid 
         container
@@ -56,47 +57,46 @@ class Auth extends Component {
           <Typography variant="subtitle1">By Lautaro Galarza</Typography>
         </Grid>
         <Grid item>
-          <Paper className={classes.paper}>
-            <TextField
-              required
-              type="text"
-              label="User"
-              margin="normal"
-              variant="outlined"
-              value={username}
-              onChange={({ target: { value: username } }) => this.setState({ username })}
-            />
-            <TextField
-              required
-              type={passwordVisible ? 'text' : 'password'}
-              label="Password"
-              margin="normal"
-              variant="outlined"
-              value={password}
-              onChange={({ target: { value: password } }) => this.setState({ password })}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton aria-label="Toggle password visibility" onClick={() => this.setState(state => ({ passwordVisible: !state.passwordVisible }))}>
-                      {!passwordVisible ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                )
-              }}
-            />
-            <Button
-              className={classes.login}
-              variant="contained"
-              size="large"
-              onClick={() => authenticate(username, password)}
-            >
-              {isFetching ? <CircularProgress/> : 'Login'}
-            </Button>
-            <Snackbar
-              open={!isValid && error}
-              message={error}
-            />
-          </Paper>
+          <form noValidate>
+            <Paper className={classes.paper}>
+                <TextField
+                  required
+                  type="text"
+                  label="User"
+                  margin="normal"
+                  variant="outlined"
+                  value={username}
+                  onChange={({ target: { value: username } }) => this.setState({ username })}
+                />
+                <TextField
+                  required
+                  type={passwordVisible ? 'text' : 'password'}
+                  label="Password"
+                  margin="normal"
+                  variant="outlined"
+                  value={password}
+                  onChange={({ target: { value: password } }) => this.setState({ password })}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton aria-label="Toggle password visibility" onClick={() => this.setState(state => ({ passwordVisible: !state.passwordVisible }))}>
+                          {!passwordVisible ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                <Button
+                  className={classes.login}
+                  variant="contained"
+                  size="large"
+                  onClick={() => authenticate(username, password)}
+                >
+                  {isFetching ? <CircularProgress/> : 'Login'}
+                </Button>
+                <MySnackbar mustOpen={isValid != null && !isValid} variant="error" message={error} />
+            </Paper>
+          </form>
         </Grid>
       </Grid>
     )
