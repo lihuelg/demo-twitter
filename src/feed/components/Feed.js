@@ -28,6 +28,16 @@ const styles = ({ spacing }) => ({
 });
 
 class Feed extends Component {
+  constructor(){
+    super();
+
+    this.state = {
+      postInput: ''
+    };
+
+    this.handlePostInput = ({ target: { value: postInput }}) => this.setState({ postInput });
+  }
+
   componentDidMount() {
     const { fill } = this.props;
 
@@ -35,8 +45,9 @@ class Feed extends Component {
   }
 
   render() {
-    const { isFetching, list, classes } = this.props;
-    
+    const { feedReducer: { isFetching, list } , classes, post, postReducer } = this.props;
+    const { postInput } = this.state;
+
     if(isFetching) return <CircularProgress />
 
     return (
@@ -48,15 +59,17 @@ class Feed extends Component {
           spacing={7}
         >
           <Grid item>
-            <TextField 
+            <TextField
               placeholder="Write your post here..."
               fullWidth
+              value={postInput}
+              onChange={this.handlePostInput}
               InputProps={{
                 className: classes.postInput,
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton aria-label="Send post">
-                      <Send />
+                    <IconButton aria-label="Send post" onClick={() => post(postInput)}>
+                      {postReducer.isFetching ? <CircularProgress size={25} /> : <Send />}
                     </IconButton>
                   </InputAdornment>
                 )
