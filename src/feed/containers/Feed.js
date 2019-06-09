@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { requestFeed } from '../actions';
+import { requestFeed, addPost } from '../actions';
 import Feed from '../components/Feed';
 
 const mapStateToProps = ({ feedReducer }) => ({
@@ -7,7 +7,8 @@ const mapStateToProps = ({ feedReducer }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fill: () => dispatch(requestFeed())
+  fill: () => dispatch(requestFeed()),
+  post: post => dispatch(addPost(post)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Feed);
