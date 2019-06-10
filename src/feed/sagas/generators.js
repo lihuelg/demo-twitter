@@ -1,5 +1,5 @@
-import { call, put, select } from 'redux-saga/effects';
-import { getFeed, sendPost } from '../api';
+import { call, put, getContext } from 'redux-saga/effects';
+import { getFeed } from '../api';
 import {
   requestFeedSuccess,
   requestFeedError,
@@ -18,12 +18,11 @@ export function* requestFeed({ user }){
   }
 }
 
-export function* addPost({ post: title }){
+export function* addPost({ post: message }){
   try{
-    //This should be removed once a proper api is setted up
-    const id = yield select(({ feedReducer: { feedReducer: { list }} }) => list[list.length - 1].id + 1);
-    const items = yield call(sendPost, { id, title, userId: 1 });
-    yield put(addPostSuccess(items));
+    const { posts } = yield getContext('firebase');
+    const item = yield posts().add({ message, createdBy: 'bGF5359vgNFpaQBS4ORG' });
+    yield put(addPostSuccess(item));
   }catch(error){
     console.error(error);
     yield put(addPostError(errorParser(error)));
