@@ -1,29 +1,51 @@
-import { call, put, select } from 'redux-saga/effects';
-import { getFeed, sendPost } from '../api';
+import { take, put, getContext, fork } from 'redux-saga/effects';
+import { eventChannel } from 'redux-saga';
 import {
-  requestFeedSuccess,
+  updateFeed,
   requestFeedError,
   addPostSuccess,
   addPostError,
 } from '../actions';
 import errorParser from '../../shared/utils/errorParser';
 
-export function* requestFeed({ user }){
-  try{
-    const items = yield call(getFeed, user);
-    yield put(requestFeedSuccess(items));
-  }catch(error){
-    console.error(error);
-    yield put(requestFeedError(errorParser(error)));
-  }
+function createGetPostChannel(firebaseCollection) {
+  return eventChannel(emit => {
+
+    const onValueHandler = snapshot => {
+      emit({ data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) || [] });
+    }
+
+    const onErrorHandler = errorEvent => {
+      emit(new Error(errorEvent));
+    }
+
+    const unsubscribe = firebaseCollection.onSnapshot(onValueHandler, onErrorHandler);
+
+    return () => unsubscribe()
+  })
 }
 
-export function* addPost({ post: title }){
+export function* requestFeed({ user }){
+  yield fork(function* () {
+    const { posts } = yield getContext('firebase');
+    const getPostChan = createGetPostChannel(posts());
+    try{
+      while(true){
+       const { data } = yield take(getPostChan);
+       yield put(updateFeed(data)) 
+      }
+    }catch(error){
+      console.error(error);
+      yield put(requestFeedError(errorParser(error)));
+    }
+  });
+}
+
+export function* addPost({ post: message }){
   try{
-    //This should be removed once a proper api is setted up
-    const id = yield select(({ feedReducer: { feedReducer: { list }} }) => list[list.length - 1].id + 1);
-    const items = yield call(sendPost, { id, title, userId: 1 });
-    yield put(addPostSuccess(items));
+    const { posts } = yield getContext('firebase');
+    const item = yield posts().add({ message, createdBy: 'bGF5359vgNFpaQBS4ORG' });
+    yield put(addPostSuccess(item));
   }catch(error){
     console.error(error);
     yield put(addPostError(errorParser(error)));

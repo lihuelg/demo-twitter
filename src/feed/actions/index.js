@@ -23,3 +23,7 @@ export const addPostSuccess = (data) => (
 export const addPostError = (error) => (
   { type: actionTypes.ADD_POST_ERROR, error }
 );
+
+export const updateFeed = (data) => (
+  { type: actionTypes.UPDATE_FEED, data }
+);

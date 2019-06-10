@@ -57,6 +57,7 @@ class Feed extends Component {
           direction="column"
           alignItems="stretch"
           spacing={7}
+          wrap="nowrap"
         >
           <Grid item>
             <TextField
@@ -79,13 +80,13 @@ class Feed extends Component {
           <Grid item>
             <Paper>
               <List>
-                {list.map(({ id, title, userId }, index) => (
+                {list.map(({ id, message, createdBy }, index) => (
                   <ListItem divider={index !== list.length - 1} key={id}>
                     <ListItemAvatar>
-                      <Avatar alt={`User ${userId}`} src={`https://i.pravatar.cc/150?img=${userId}`} />
+                      <Avatar alt={`User ${createdBy}`} src={`https://i.pravatar.cc/150?u==${createdBy}`} />
                     </ListItemAvatar>
                     <ListItemText
-                      primary={title}
+                      primary={message}
                     />
                   </ListItem>
                 ))}
