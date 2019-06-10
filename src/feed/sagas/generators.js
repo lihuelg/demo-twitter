@@ -1,21 +1,44 @@
-import { call, put, getContext } from 'redux-saga/effects';
-import { getFeed } from '../api';
+import { take, put, getContext, fork } from 'redux-saga/effects';
+import { eventChannel } from 'redux-saga';
 import {
-  requestFeedSuccess,
+  updateFeed,
   requestFeedError,
   addPostSuccess,
   addPostError,
 } from '../actions';
 import errorParser from '../../shared/utils/errorParser';
 
+function createGetPostChannel(firebaseCollection) {
+  return eventChannel(emit => {
+
+    const onValueHandler = snapshot => {
+      emit({ data: snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) || [] });
+    }
+
+    const onErrorHandler = errorEvent => {
+      emit(new Error(errorEvent));
+    }
+
+    const unsubscribe = firebaseCollection.onSnapshot(onValueHandler, onErrorHandler);
+
+    return () => unsubscribe()
+  })
+}
+
 export function* requestFeed({ user }){
-  try{
-    const items = yield call(getFeed, user);
-    yield put(requestFeedSuccess(items));
-  }catch(error){
-    console.error(error);
-    yield put(requestFeedError(errorParser(error)));
-  }
+  yield fork(function* () {
+    const { posts } = yield getContext('firebase');
+    const getPostChan = createGetPostChannel(posts());
+    try{
+      while(true){
+       const { data } = yield take(getPostChan);
+       yield put(updateFeed(data)) 
+      }
+    }catch(error){
+      console.error(error);
+      yield put(requestFeedError(errorParser(error)));
+    }
+  });
 }
 
 export function* addPost({ post: message }){

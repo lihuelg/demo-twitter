@@ -30,12 +30,13 @@ export default (state = initialState, action) => {
         isValid: false,
         error: action.error
       }
-    case actionTypes.ADD_POST_SUCCESS:
+    case actionTypes.UPDATE_FEED:
       return {
         ...state,
+        isFetching: false,
+        isValid: true,
         list: [
-          ...state.list,
-          action.data
+          ...action.data
         ]
       }
     default:
