@@ -1,20 +1,62 @@
-import { put, call } from 'redux-saga/effects';
-import { authenticate, register } from '../api';
+import { put, call, fork, take, getContext } from 'redux-saga/effects';
+import { eventChannel } from 'redux-saga';
+import * as actionTypes from '../constants/actionTypes';
 import {
-  requestAuthSuccess,
+  updateAuth,
   requestAuthError,
-  requestRegisterSuccess,
   requestRegisterError,
 } from '../actions';
 import errorParser from '../../shared/utils/errorParser';
 
+function createAuthChangedChannel(auth) {
+  return eventChannel(emit => {
 
-function request(apiCall, successCb, errorCb) {
-  return function* ({ username, password, history }) {
+    const onValueHandler = user => {
+      console.log(user);
+      emit({ data: { token: user.ra, id: user.uid }});
+    }
+
+    const onErrorHandler = errorEvent => {
+      emit(new Error(errorEvent));
+    }
+
+    const unsubscribe = auth.onAuthStateChanged(onValueHandler, onErrorHandler);
+
+    return () => unsubscribe()
+  })
+}
+
+function* checkAuthUpdates(){
+  const { auth } = yield getContext('firebase');
+    const getAuthChannel = createAuthChangedChannel(auth);
+    try{
+      while(true){
+       const { data } = yield take(getAuthChannel);
+       yield put(updateAuth(data)) 
+      }
+    }catch(error){
+      console.error(error);
+      yield put(requestAuthError(errorParser(error)));
+    }
+}
+
+function request(errorCb) {
+  return function* ({ username, password, type, history }) {
     try {
-      const { token } = yield call(apiCall, { email: username, password });
-      yield put(successCb(token));
-      yield put(history.push('/'))
+      yield fork(checkAuthUpdates);
+      const { authenticate, register } = yield getContext('firebase');
+      let apiCall;
+      switch(type){
+        case actionTypes.REQUEST_AUTH:
+          apiCall =authenticate;
+          break;
+        case actionTypes.REQUEST_REGISTER:
+          apiCall = register;
+          break;
+        default:
+      }
+      yield call(apiCall, { username, password });
+      history.push('/');
     } catch (error) {
       console.error(error);
       yield put(errorCb(errorParser(error)));
@@ -22,6 +64,6 @@ function request(apiCall, successCb, errorCb) {
   }
 }
 
-export const requestAuth = request(authenticate, requestAuthSuccess, requestAuthError);
+export const requestAuth = request(requestAuthError);
 
-export const requestRegister = request(register, requestRegisterSuccess, requestRegisterError);
+export const requestRegister = request(requestRegisterError);

@@ -2,7 +2,7 @@ import * as actionTypes from './main/constants/actionTypes';
 
 export const saveAuthOnStorageMiddleware = store => next => action => {
   next(action);
-  if(action.type === actionTypes.REQUEST_AUTH_SUCCESS){
+  if(action.type === actionTypes.UPDATE_AUTH){
     localStorage.setItem('auth', JSON.stringify({ authReducer: store.getState().authReducer }));
   }
 };
