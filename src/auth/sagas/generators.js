@@ -6,7 +6,7 @@ import {
   requestAuthError,
   requestRegisterError,
 } from '../actions';
-import errorParser from '../../shared/utils/errorParser';
+import { errorParser } from '../../shared/utils';
 
 function createAuthChangedChannel(auth) {
   return eventChannel(emit => {

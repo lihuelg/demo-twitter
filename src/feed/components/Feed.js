@@ -12,6 +12,7 @@ import {
   Container,
   IconButton,
   InputAdornment,
+  Tooltip,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { Send } from '@material-ui/icons';
@@ -80,13 +81,16 @@ class Feed extends Component {
           <Grid item>
             <Paper>
               <List>
-                {list.map(({ id, message, createdBy }, index) => (
+                {list.map(({ id, message, createdBy, createdAtFormatted }, index) => (
                   <ListItem divider={index !== list.length - 1} key={id}>
-                    <ListItemAvatar>
-                      <Avatar alt={`User ${createdBy}`} src={`https://i.pravatar.cc/150?u==${createdBy}`} />
-                    </ListItemAvatar>
+                    <Tooltip title={createdBy} placement="left-start">
+                      <ListItemAvatar>
+                        <Avatar alt={`User ${createdBy}`} src={`https://i.pravatar.cc/150?u==${createdBy}`} />
+                      </ListItemAvatar>
+                    </Tooltip>
                     <ListItemText
                       primary={message}
+                      secondary={createdAtFormatted}
                     />
                   </ListItem>
                 ))}
