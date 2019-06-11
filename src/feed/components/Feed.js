@@ -37,6 +37,7 @@ class Feed extends Component {
     };
 
     this.handlePostInput = ({ target: { value: postInput }}) => this.setState({ postInput });
+    this.handlePostSend = this.handlePostSend.bind(this);
   }
 
   componentDidMount() {
@@ -45,8 +46,15 @@ class Feed extends Component {
     fill();
   }
 
+  handlePostSend() {
+    const { post } = this.props;
+    const { postInput } = this.state;
+    
+    this.setState({ postInput: '' }, post(postInput));
+  }
+
   render() {
-    const { feedReducer: { isFetching, list } , classes, post, postReducer } = this.props;
+    const { feedReducer: { isFetching, list } , classes, postReducer } = this.props;
     const { postInput } = this.state;
 
     if(isFetching) return <CircularProgress />
@@ -70,7 +78,7 @@ class Feed extends Component {
                 className: classes.postInput,
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton aria-label="Send post" onClick={() => post(postInput)}>
+                    <IconButton aria-label="Send post" onClick={this.handlePostSend}>
                       {postReducer.isFetching ? <CircularProgress size={25} /> : <Send />}
                     </IconButton>
                   </InputAdornment>
