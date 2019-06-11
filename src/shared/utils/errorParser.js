@@ -1,4 +1,4 @@
 
-export default function errorParser(error) {
+export function errorParser(error) {
   return error.message;
 }
