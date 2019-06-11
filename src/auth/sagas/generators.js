@@ -12,8 +12,7 @@ function createAuthChangedChannel(auth) {
   return eventChannel(emit => {
 
     const onValueHandler = user => {
-      console.log(user);
-      emit({ data: { token: user.ra, id: user.uid }});
+      emit((user && { data: { token: user.ra, id: user.uid }}) || {});
     }
 
     const onErrorHandler = errorEvent => {

@@ -13,12 +13,12 @@ function createGetPostChannel(firebaseCollection) {
 
     const onValueHandler = snapshot => {
       emit({ 
-        data: snapshot.docs
+        data: (snapshot.docs && snapshot.docs
         .map(doc => {
           const data = doc.data()
           return { id: doc.id, ...data, createdAtFormatted: postDateFromTimestamp(data.createdAt)};
         })
-        .sort((postA, postB) => postB.createdAt.toDate() - postA.createdAt.toDate()) 
+        .sort((postA, postB) => postB.createdAt.toDate() - postA.createdAt.toDate())) 
         || [] });
     }
 
