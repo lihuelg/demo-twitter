@@ -1,20 +1,26 @@
-import { put, call } from 'redux-saga/effects';
-import { authenticate, register } from '../api';
+import { put, call, getContext } from 'redux-saga/effects';
+import * as actionTypes from '../constants/actionTypes';
 import {
-  requestAuthSuccess,
   requestAuthError,
-  requestRegisterSuccess,
   requestRegisterError,
 } from '../actions';
 import errorParser from '../../shared/utils/errorParser';
 
-
-function request(apiCall, successCb, errorCb) {
-  return function* ({ username, password, history }) {
+function request(successCb, errorCb) {
+  return function* ({ username, password, history, type }) {
     try {
-      const { token } = yield call(apiCall, { email: username, password });
-      yield put(successCb(token));
-      yield put(history.push('/'))
+      const { authenticate, register } = yield getContext('firebase');
+      let apiCall;
+      switch(type){
+        case actionTypes.REQUEST_AUTH:
+          apiCall =authenticate;
+          break;
+        case actionTypes.REQUEST_REGISTER:
+          apiCall = register;
+          break;
+        default:
+      }
+      yield call(apiCall, { username, password });
     } catch (error) {
       console.error(error);
       yield put(errorCb(errorParser(error)));
@@ -22,6 +28,6 @@ function request(apiCall, successCb, errorCb) {
   }
 }
 
-export const requestAuth = request(authenticate, requestAuthSuccess, requestAuthError);
+export const requestAuth = request(requestAuthError);
 
-export const requestRegister = request(register, requestRegisterSuccess, requestRegisterError);
+export const requestRegister = request(requestRegisterError);
